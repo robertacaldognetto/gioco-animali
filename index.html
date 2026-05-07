@@ -2,54 +2,54 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<title>Gioco Italiano</title>
+<title>Gioco Magico Italiano</title>
 
 <style>
 body {
   font-family: Arial;
   text-align: center;
-  background: linear-gradient(to bottom, #a8edea, #fed6e3);
+  background: linear-gradient(to bottom, #74ebd5, #acb6e5);
 }
 
 .card {
   background: white;
   padding: 20px;
-  margin: 40px auto;
-  width: 360px;
+  margin: 30px auto;
+  width: 380px;
   border-radius: 20px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.big {
+  font-size: 45px;
+  margin: 15px;
+}
+
+.score {
+  font-size: 18px;
+  margin: 10px;
 }
 
 button {
-  padding: 10px;
+  padding: 12px;
   margin: 5px;
   border: none;
-  border-radius: 10px;
-  background: #6c5ce7;
+  border-radius: 12px;
+  background: #ff7675;
   color: white;
   font-size: 16px;
   cursor: pointer;
 }
 
 button:hover {
-  background: #4834d4;
+  background: #d63031;
 }
 
-input {
-  padding: 10px;
+.choice {
+  display: block;
   width: 80%;
-  text-align: center;
-  font-size: 18px;
-}
-
-.big {
-  font-size: 40px;
-  margin: 15px;
-}
-
-.score {
-  font-size: 18px;
-  color: #333;
+  margin: 8px auto;
+  background: #55efc4;
+  color: black;
 }
 </style>
 
@@ -57,95 +57,86 @@ input {
 <body>
 
 <div class="card" id="menu">
-  <h2>Scegli il gioco</h2>
-  <button onclick="start('suoni')">Suoni duri</button><br>
-  <button onclick="start('doppie')">Doppie</button>
+  <h2>🎮 Gioco Magico</h2>
+  <button onclick="start()">Inizia</button>
 </div>
 
 <div class="card" id="game" style="display:none;">
-  <h3 id="title"></h3>
   <div class="score">⭐ Punti: <span id="score">0</span></div>
-  <div class="big" id="question"></div>
-  
-  <button onclick="speak()">🔊 Ascolta</button>
-  
-  <p>Scrivi la parola:</p>
-  <input id="input"/>
-  <br>
-  <button onclick="check()">Controlla</button>
-  
+  <div class="big" id="emoji"></div>
+  <h3 id="question"></h3>
+
+  <div id="choices"></div>
+
   <p id="msg"></p>
-  
-  <button onclick="back()">Torna al menu</button>
 </div>
 
 <script>
-const giochi = {
-  suoni: [
-    {q:"_ane 🐶", a:"cane"},
-    {q:"_asa 🏠", a:"casa"},
-    {q:"_uoco 👨‍🍳", a:"cuoco"},
-    {q:"_atto 🐱", a:"gatto"},
-    {q:"_onna 👗", a:"gonna"}
-  ],
-  doppie: [
-    {q:"pa_a ⚽", a:"palla"},
-    {q:"ga_o 🐱", a:"gatto"},
-    {q:"be_o 🐑", a:"bello"},
-    {q:"so_le ☀️", a:"sole"},
-    {q:"ca_ne 🐶", a:"cane"}
-  ]
-};
+const giochi = [
+  {
+    emoji:"🐱",
+    domanda:"Scegli la parola giusta",
+    corretta:"gatto",
+    opzioni:["gato","gatto","gatoo"]
+  },
+  {
+    emoji:"🐶",
+    domanda:"Completa con suono giusto",
+    corretta:"cane",
+    opzioni:["kane","cane","qane"]
+  },
+  {
+    emoji:"🐮",
+    domanda:"Trova la doppia",
+    corretta:"mucca",
+    opzioni:["muca","mucca","mukka"]
+  },
+  {
+    emoji:"👗",
+    domanda:"Qual è giusta?",
+    corretta:"gonna",
+    opzioni:["gona","gonna","gonaa"]
+  }
+];
 
-let current = [];
 let i = 0;
 let score = 0;
 
-function start(tipo){
-  current = giochi[tipo];
-  i = 0;
-  score = 0;
+function start(){
   document.getElementById("menu").style.display="none";
   document.getElementById("game").style.display="block";
-  document.getElementById("title").innerText = tipo === "suoni" ? "Suoni duri" : "Doppie";
-  updateScore();
   load();
 }
 
 function load(){
-  document.getElementById("question").innerText = current[i].q;
-  document.getElementById("input").value="";
-  document.getElementById("msg").innerText="";
+  let g = giochi[i];
+  document.getElementById("emoji").innerText = g.emoji;
+  document.getElementById("question").innerText = g.domanda;
+
+  let div = document.getElementById("choices");
+  div.innerHTML = "";
+
+  g.opzioni.forEach(op => {
+    let b = document.createElement("button");
+    b.className = "choice";
+    b.innerText = op;
+    b.onclick = () => check(op);
+    div.appendChild(b);
+  });
+
+  document.getElementById("msg").innerText = "";
 }
 
-function check(){
-  let val = document.getElementById("input").value.toLowerCase();
-  if(val === current[i].a){
+function check(val){
+  if(val === giochi[i].corretta){
     score++;
-    updateScore();
-    document.getElementById("msg").innerText="🎉 Bravissimo!";
-    i = (i+1)%current.length;
+    document.getElementById("score").innerText = score;
+    document.getElementById("msg").innerText = "🎉 Giusto!";
+    i = (i+1)%giochi.length;
     setTimeout(load,800);
   } else {
-    document.getElementById("msg").innerText="😊 Riprova!";
+    document.getElementById("msg").innerText = "❌ Riprova!";
   }
-}
-
-function updateScore(){
-  document.getElementById("score").innerText = score;
-}
-
-function speak(){
-  let parola = current[i].a;
-  let speech = new SpeechSynthesisUtterance(parola);
-  speech.lang = "it-IT";
-  speech.rate = 0.8;
-  speechSynthesis.speak(speech);
-}
-
-function back(){
-  document.getElementById("menu").style.display="block";
-  document.getElementById("game").style.display="none";
 }
 </script>
 
