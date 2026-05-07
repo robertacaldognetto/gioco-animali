@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<title>Gioco Italiano</title>
+<title>Acchiappa La Parola</title>
 
 <style>
 body {
@@ -45,6 +45,12 @@ button {
 }
 
 .msg { font-size: 28px; color: white; height: 40px; }
+
+.logo {
+  width: 180px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
 </style>
 
 </head>
@@ -52,12 +58,21 @@ button {
 
 <div class="container">
 
+<!-- MENU -->
 <div id="menu">
-  <h1>🎮 Gioco Magico</h1>
+  <a href="https://www.goccedimemoria.info/" target="_blank">
+    <img class="logo" src="https://www.goccedimemoria.info/wp-content/uploads/2020/03/logo-gocce-di-memoria.png">
+  </a>
+  <h1>🎮 Acchiappa La Parola</h1>
   <button onclick="start()">INIZIA</button>
 </div>
 
+<!-- GIOCO -->
 <div id="game" style="display:none;">
+  <a href="https://www.goccedimemoria.info/" target="_blank">
+    <img class="logo" src="https://www.goccedimemoria.info/wp-content/uploads/2020/03/logo-gocce-di-memoria.png">
+  </a>
+
   <div class="score">⭐ Giuste: <span id="giuste">0</span> | ❌ Errori: <span id="errori">0</span></div>
   <div class="big" id="emoji"></div>
   <h1>Scegli la parola giusta</h1>
@@ -65,7 +80,12 @@ button {
   <div class="msg" id="msg"></div>
 </div>
 
+<!-- FINE -->
 <div id="fine" style="display:none;">
+  <a href="https://www.goccedimemoria.info/" target="_blank">
+    <img class="logo" src="https://www.goccedimemoria.info/wp-content/uploads/2020/03/logo-gocce-di-memoria.png">
+  </a>
+
   <h1>🎉 RISULTATO FINALE</h1>
   <h2 id="risultato"></h2>
   <button onclick="restart()">RIGIOCA</button>
@@ -78,7 +98,6 @@ button {
 const giustoSound = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
 const erroreSound = new Audio("https://actions.google.com/sounds/v1/cartoon/boing.ogg");
 
-// elenco parole
 const giochi = [
 {emoji:"🐱", corretta:"gatto", opzioni:["gato","gatto","gatoo"]},
 {emoji:"🐶", corretta:"cane", opzioni:["kane","cane","qane"]},
@@ -134,10 +153,14 @@ function load(){
   document.getElementById("msg").innerText = "";
 }
 
+// 🔊 VOCE PIÙ LENTA
 function speak(testo){
   let speech = new SpeechSynthesisUtterance(testo);
   speech.lang = "it-IT";
-  speech.rate = 0.8;
+  speech.rate = 0.6; // ← più lenta
+  speech.pitch = 1;
+  speech.volume = 1;
+  speechSynthesis.cancel();
   speechSynthesis.speak(speech);
 }
 
