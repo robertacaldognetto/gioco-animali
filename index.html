@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<title>Gioco Magico Italiano</title>
+<title>Gioco Italiano</title>
 
 <style>
 body {
@@ -24,16 +24,13 @@ body {
   100% {background-position: 0% 50%;}
 }
 
-.container {
-  width: 100%;
-  max-width: 800px;
-}
+.container { width: 100%; max-width: 800px; }
 
 .big { font-size: 90px; }
 
 h1 { font-size: 40px; color: white; }
 
-.score { font-size: 25px; color: white; margin: 10px; }
+.score { font-size: 25px; color: white; }
 
 button {
   display: block;
@@ -61,77 +58,53 @@ button {
 </div>
 
 <div id="game" style="display:none;">
-  <div class="score">⭐ Punti: <span id="score">0</span></div>
+  <div class="score">⭐ Giuste: <span id="giuste">0</span> | ❌ Errori: <span id="errori">0</span></div>
   <div class="big" id="emoji"></div>
-  <h1 id="question"></h1>
+  <h1>Scegli la parola giusta</h1>
   <div id="choices"></div>
   <div class="msg" id="msg"></div>
+</div>
+
+<div id="fine" style="display:none;">
+  <h1>🎉 RISULTATO FINALE</h1>
+  <h2 id="risultato"></h2>
+  <button onclick="restart()">RIGIOCA</button>
 </div>
 
 </div>
 
 <script>
 
-// 🔊 suoni
 const giustoSound = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
-const sbagliatoSound = new Audio("https://actions.google.com/sounds/v1/cartoon/boing.ogg");
+const erroreSound = new Audio("https://actions.google.com/sounds/v1/cartoon/boing.ogg");
 
-// 🎮 50+ parole
+// elenco parole
 const giochi = [
 {emoji:"🐱", corretta:"gatto", opzioni:["gato","gatto","gatoo"]},
 {emoji:"🐶", corretta:"cane", opzioni:["kane","cane","qane"]},
 {emoji:"🐮", corretta:"mucca", opzioni:["muca","mucca","mukka"]},
-{emoji:"🦁", corretta:"leone", opzioni:["leone","leonne","leon"]},
 {emoji:"🐸", corretta:"rana", opzioni:["rrana","rana","ranae"]},
 {emoji:"🐷", corretta:"maiale", opzioni:["maiale","maialle","maale"]},
 {emoji:"🐔", corretta:"gallina", opzioni:["galina","gallina","galllina"]},
 {emoji:"🐴", corretta:"cavallo", opzioni:["cavalo","cavallo","cavallo"]},
 {emoji:"🐘", corretta:"elefante", opzioni:["elefante","elefannte","elefant"]},
 {emoji:"🐟", corretta:"pesce", opzioni:["pesce","pesse","peshe"]},
-
-{emoji:"🍞", corretta:"pane", opzioni:["pane","panne","pene"]},
 {emoji:"🍎", corretta:"mela", opzioni:["mela","mella","melaa"]},
 {emoji:"🍌", corretta:"banana", opzioni:["banana","bananna","banan"]},
-{emoji:"🍓", corretta:"fragola", opzioni:["fragola","fraggola","fragla"]},
 {emoji:"🍕", corretta:"pizza", opzioni:["piza","pizza","pizzza"]},
-{emoji:"🍝", corretta:"pasta", opzioni:["pasta","passta","pastae"]},
-{emoji:"🍰", corretta:"torta", opzioni:["torta","torrta","tota"]},
-{emoji:"🥛", corretta:"latte", opzioni:["late","latte","lattee"]},
-{emoji:"🧀", corretta:"formaggio", opzioni:["formagio","formaggio","formagg"]},
-{emoji:"🍪", corretta:"biscotto", opzioni:["biscoto","biscotto","biscot"]},
-
 {emoji:"🚗", corretta:"auto", opzioni:["auto","autto","ato"]},
-{emoji:"🚲", corretta:"bici", opzioni:["bici","bicci","bicii"]},
-{emoji:"✈️", corretta:"aereo", opzioni:["aereo","aereoo","areo"]},
-{emoji:"🚂", corretta:"treno", opzioni:["treno","trenno","trenoe"]},
-{emoji:"🚢", corretta:"nave", opzioni:["nave","navve","navee"]},
-
-{emoji:"👗", corretta:"gonna", opzioni:["gona","gonna","gonaa"]},
-{emoji:"👕", corretta:"maglia", opzioni:["maglia","magllia","magla"]},
-{emoji:"👖", corretta:"pantaloni", opzioni:["pantaloni","panttaloni","pantalni"]},
-{emoji:"👟", corretta:"scarpe", opzioni:["scarpe","scarrpe","scarpee"]},
-
-{emoji:"🏠", corretta:"casa", opzioni:["casa","cassa","casae"]},
 {emoji:"🏫", corretta:"scuola", opzioni:["scuola","scuolla","squola"]},
 {emoji:"📚", corretta:"libro", opzioni:["libro","libbro","libroo"]},
 {emoji:"✏️", corretta:"penna", opzioni:["pena","penna","penna"]},
-{emoji:"🪑", corretta:"sedia", opzioni:["sedia","seddia","sedai"]},
-
 {emoji:"🌞", corretta:"sole", opzioni:["sole","solle","sol"]},
 {emoji:"🌙", corretta:"luna", opzioni:["luna","lunna","lunae"]},
 {emoji:"⭐", corretta:"stella", opzioni:["stela","stella","stellla"]},
-{emoji:"☁️", corretta:"nuvola", opzioni:["nuvola","nuvolla","nuola"]},
-{emoji:"🌧️", corretta:"pioggia", opzioni:["piogia","pioggia","piogga"]},
-
-{emoji:"🐝", corretta:"ape", opzioni:["ape","appe","apee"]},
-{emoji:"🦋", corretta:"farfalla", opzioni:["farfala","farfalla","farfallae"]},
-{emoji:"🐞", corretta:"coccinella", opzioni:["cocinella","coccinella","coccinela"]},
-{emoji:"🐜", corretta:"formica", opzioni:["formica","formmica","formicae"]},
-{emoji:"🕷️", corretta:"ragno", opzioni:["ragno","raggno","ragnoo"]}
+{emoji:"🌧️", corretta:"pioggia", opzioni:["piogia","pioggia","piogga"]}
 ];
 
 let i = 0;
-let score = 0;
+let giuste = 0;
+let errori = 0;
 
 function start(){
   document.getElementById("menu").style.display="none";
@@ -140,9 +113,13 @@ function start(){
 }
 
 function load(){
+  if(i >= giochi.length){
+    fineGioco();
+    return;
+  }
+
   let g = giochi[i];
   document.getElementById("emoji").innerText = g.emoji;
-  document.getElementById("question").innerText = "Scegli la parola giusta";
 
   let div = document.getElementById("choices");
   div.innerHTML = "";
@@ -170,16 +147,41 @@ function check(val){
   if(val === corretta){
     giustoSound.play();
     speak(corretta);
-    score++;
-    document.getElementById("score").innerText = score;
+    giuste++;
     document.getElementById("msg").innerText = "🎉 GIUSTO!";
-    i = (i+1)%giochi.length;
-    setTimeout(load,1000);
   } else {
-    sbagliatoSound.play();
-    document.getElementById("msg").innerText = "❌ Riprova!";
+    erroreSound.play();
+    errori++;
+    document.getElementById("msg").innerText = "❌ Era: " + corretta;
+    speak(corretta);
   }
+
+  document.getElementById("giuste").innerText = giuste;
+  document.getElementById("errori").innerText = errori;
+
+  i++;
+  setTimeout(load,1200);
 }
+
+function fineGioco(){
+  document.getElementById("game").style.display="none";
+  document.getElementById("fine").style.display="block";
+
+  document.getElementById("risultato").innerText =
+    "⭐ Giuste: " + giuste + "   ❌ Errori: " + errori;
+}
+
+function restart(){
+  i = 0;
+  giuste = 0;
+  errori = 0;
+
+  document.getElementById("fine").style.display="none";
+  document.getElementById("game").style.display="block";
+
+  load();
+}
+
 </script>
 
 </body>
