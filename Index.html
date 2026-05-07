@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Gioco Animali</title>
+<style>
+body { font-family: Arial; text-align: center; background: #d4f5d4; }
+.card { background: white; padding: 20px; margin: 50px auto; width: 300px; border-radius: 20px; }
+.emoji { font-size: 60px; }
+input { padding: 10px; width: 80%; text-align: center; }
+button { padding: 10px; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<div class="card">
+<div class="emoji" id="emoji">🐱</div>
+<p>Scrivi il nome:</p>
+<input id="input" />
+<br>
+<button onclick="check()">Controlla</button>
+<p id="msg"></p>
+</div>
+
+<script>
+const animals = [
+  {name:"gatto", emoji:"🐱"},
+  {name:"cane", emoji:"🐶"},
+  {name:"mucca", emoji:"🐮"}
+];
+
+let i = 0;
+
+function check() {
+  let val = document.getElementById("input").value.toLowerCase();
+  if(val === animals[i].name){
+    document.getElementById("msg").innerText = "Bravo!";
+    i = (i+1)%animals.length;
+    document.getElementById("emoji").innerText = animals[i].emoji;
+    document.getElementById("input").value = "";
+  } else {
+    document.getElementById("msg").innerText = "Riprova";
+  }
+}
+</script>
+
+</body>
+</html>
