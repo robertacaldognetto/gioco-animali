@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<title>Gioco Magico</title>
+<title>Gioco Magico Italiano</title>
 
 <style>
 body {
@@ -26,23 +26,14 @@ body {
 
 .container {
   width: 100%;
-  max-width: 700px;
+  max-width: 800px;
 }
 
-.big {
-  font-size: 90px;
-}
+.big { font-size: 90px; }
 
-h1 {
-  font-size: 40px;
-  color: white;
-}
+h1 { font-size: 40px; color: white; }
 
-.score {
-  font-size: 25px;
-  color: white;
-  margin: 10px;
-}
+.score { font-size: 25px; color: white; margin: 10px; }
 
 button {
   display: block;
@@ -56,15 +47,7 @@ button {
   background: #ffdd59;
 }
 
-button:hover {
-  transform: scale(1.05);
-}
-
-.msg {
-  font-size: 28px;
-  color: white;
-  height: 40px;
-}
+.msg { font-size: 28px; color: white; height: 40px; }
 </style>
 
 </head>
@@ -81,40 +64,70 @@ button:hover {
   <div class="score">⭐ Punti: <span id="score">0</span></div>
   <div class="big" id="emoji"></div>
   <h1 id="question"></h1>
-
   <div id="choices"></div>
-
   <div class="msg" id="msg"></div>
 </div>
 
 </div>
 
 <script>
+
+// 🔊 suoni
+const giustoSound = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
+const sbagliatoSound = new Audio("https://actions.google.com/sounds/v1/cartoon/boing.ogg");
+
+// 🎮 50+ parole
 const giochi = [
-  {
-    emoji:"🐱",
-    domanda:"Qual è giusta?",
-    corretta:"gatto",
-    opzioni:["gato","gatto","gatoo"]
-  },
-  {
-    emoji:"🐶",
-    domanda:"Scegli bene",
-    corretta:"cane",
-    opzioni:["kane","cane","qane"]
-  },
-  {
-    emoji:"🐮",
-    domanda:"Trova la doppia",
-    corretta:"mucca",
-    opzioni:["muca","mucca","mukka"]
-  },
-  {
-    emoji:"👗",
-    domanda:"Qual è corretta?",
-    corretta:"gonna",
-    opzioni:["gona","gonna","gonaa"]
-  }
+{emoji:"🐱", corretta:"gatto", opzioni:["gato","gatto","gatoo"]},
+{emoji:"🐶", corretta:"cane", opzioni:["kane","cane","qane"]},
+{emoji:"🐮", corretta:"mucca", opzioni:["muca","mucca","mukka"]},
+{emoji:"🦁", corretta:"leone", opzioni:["leone","leonne","leon"]},
+{emoji:"🐸", corretta:"rana", opzioni:["rrana","rana","ranae"]},
+{emoji:"🐷", corretta:"maiale", opzioni:["maiale","maialle","maale"]},
+{emoji:"🐔", corretta:"gallina", opzioni:["galina","gallina","galllina"]},
+{emoji:"🐴", corretta:"cavallo", opzioni:["cavalo","cavallo","cavallo"]},
+{emoji:"🐘", corretta:"elefante", opzioni:["elefante","elefannte","elefant"]},
+{emoji:"🐟", corretta:"pesce", opzioni:["pesce","pesse","peshe"]},
+
+{emoji:"🍞", corretta:"pane", opzioni:["pane","panne","pene"]},
+{emoji:"🍎", corretta:"mela", opzioni:["mela","mella","melaa"]},
+{emoji:"🍌", corretta:"banana", opzioni:["banana","bananna","banan"]},
+{emoji:"🍓", corretta:"fragola", opzioni:["fragola","fraggola","fragla"]},
+{emoji:"🍕", corretta:"pizza", opzioni:["piza","pizza","pizzza"]},
+{emoji:"🍝", corretta:"pasta", opzioni:["pasta","passta","pastae"]},
+{emoji:"🍰", corretta:"torta", opzioni:["torta","torrta","tota"]},
+{emoji:"🥛", corretta:"latte", opzioni:["late","latte","lattee"]},
+{emoji:"🧀", corretta:"formaggio", opzioni:["formagio","formaggio","formagg"]},
+{emoji:"🍪", corretta:"biscotto", opzioni:["biscoto","biscotto","biscot"]},
+
+{emoji:"🚗", corretta:"auto", opzioni:["auto","autto","ato"]},
+{emoji:"🚲", corretta:"bici", opzioni:["bici","bicci","bicii"]},
+{emoji:"✈️", corretta:"aereo", opzioni:["aereo","aereoo","areo"]},
+{emoji:"🚂", corretta:"treno", opzioni:["treno","trenno","trenoe"]},
+{emoji:"🚢", corretta:"nave", opzioni:["nave","navve","navee"]},
+
+{emoji:"👗", corretta:"gonna", opzioni:["gona","gonna","gonaa"]},
+{emoji:"👕", corretta:"maglia", opzioni:["maglia","magllia","magla"]},
+{emoji:"👖", corretta:"pantaloni", opzioni:["pantaloni","panttaloni","pantalni"]},
+{emoji:"👟", corretta:"scarpe", opzioni:["scarpe","scarrpe","scarpee"]},
+
+{emoji:"🏠", corretta:"casa", opzioni:["casa","cassa","casae"]},
+{emoji:"🏫", corretta:"scuola", opzioni:["scuola","scuolla","squola"]},
+{emoji:"📚", corretta:"libro", opzioni:["libro","libbro","libroo"]},
+{emoji:"✏️", corretta:"penna", opzioni:["pena","penna","penna"]},
+{emoji:"🪑", corretta:"sedia", opzioni:["sedia","seddia","sedai"]},
+
+{emoji:"🌞", corretta:"sole", opzioni:["sole","solle","sol"]},
+{emoji:"🌙", corretta:"luna", opzioni:["luna","lunna","lunae"]},
+{emoji:"⭐", corretta:"stella", opzioni:["stela","stella","stellla"]},
+{emoji:"☁️", corretta:"nuvola", opzioni:["nuvola","nuvolla","nuola"]},
+{emoji:"🌧️", corretta:"pioggia", opzioni:["piogia","pioggia","piogga"]},
+
+{emoji:"🐝", corretta:"ape", opzioni:["ape","appe","apee"]},
+{emoji:"🦋", corretta:"farfalla", opzioni:["farfala","farfalla","farfallae"]},
+{emoji:"🐞", corretta:"coccinella", opzioni:["cocinella","coccinella","coccinela"]},
+{emoji:"🐜", corretta:"formica", opzioni:["formica","formmica","formicae"]},
+{emoji:"🕷️", corretta:"ragno", opzioni:["ragno","raggno","ragnoo"]}
 ];
 
 let i = 0;
@@ -129,12 +142,12 @@ function start(){
 function load(){
   let g = giochi[i];
   document.getElementById("emoji").innerText = g.emoji;
-  document.getElementById("question").innerText = g.domanda;
+  document.getElementById("question").innerText = "Scegli la parola giusta";
 
   let div = document.getElementById("choices");
   div.innerHTML = "";
 
-  g.opzioni.forEach(op => {
+  g.opzioni.sort(()=>Math.random()-0.5).forEach(op => {
     let b = document.createElement("button");
     b.innerText = op;
     b.onclick = () => check(op);
@@ -144,14 +157,26 @@ function load(){
   document.getElementById("msg").innerText = "";
 }
 
+function speak(testo){
+  let speech = new SpeechSynthesisUtterance(testo);
+  speech.lang = "it-IT";
+  speech.rate = 0.8;
+  speechSynthesis.speak(speech);
+}
+
 function check(val){
-  if(val === giochi[i].corretta){
+  let corretta = giochi[i].corretta;
+
+  if(val === corretta){
+    giustoSound.play();
+    speak(corretta);
     score++;
     document.getElementById("score").innerText = score;
     document.getElementById("msg").innerText = "🎉 GIUSTO!";
     i = (i+1)%giochi.length;
-    setTimeout(load,800);
+    setTimeout(load,1000);
   } else {
+    sbagliatoSound.play();
     document.getElementById("msg").innerText = "❌ Riprova!";
   }
 }
